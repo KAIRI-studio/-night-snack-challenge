@@ -130,7 +130,7 @@ function pad(n){return String(n).padStart(2,"0")}
 function key(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function today(){let d=new Date();d.setHours(0,0,0,0);return d}
 function successCount(){return Object.values(data.days).filter(v=>v==="success").length}
-function streak(){let d=today(),n=0;while(data.days[key(d)]==="success"){n++;d.setDate(d.getDate()-1)}return n}
+function streak(){let d=today();if(data.days[key(d)]!=="success"){d.setDate(d.getDate()-1)}let n=0;while(data.days[key(d)]==="success"){n++;d.setDate(d.getDate()-1)}return n}
 function bestStreak(){let ks=Object.keys(data.days).filter(k=>data.days[k]==="success").sort(),best=0,cur=0,prev=null;for(const k of ks){let d=new Date(k);d.setHours(0,0,0,0);cur=prev&&(d-prev===86400000)?cur+1:1;best=Math.max(best,cur);prev=d}return best}
 function rankInfo(n){const r=[["ブロンズ",0],["シルバー",10],["ゴールド",20],["プラチナ",30],["ダイヤ",50],["マスター",75],["プレデター",100]];let i=0;for(let j=0;j<r.length;j++)if(n>=r[j][1])i=j;let next=r[i+1];return {name:r[i][0],start:r[i][1],next:next?next[1]:100,pct:next?Math.min(100,(n-r[i][1])/(next[1]-r[i][1])*100):100,remain:next?next[1]-n:0}}
 function toast(t){const x=document.getElementById("toast");x.textContent=t;x.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>x.classList.remove("show"),1500)}
