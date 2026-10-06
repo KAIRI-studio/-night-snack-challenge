@@ -1,0 +1,5 @@
+const CACHE='chokatsu-note-shell-v1';
+const SHELL=['./','./index.html','./style.css?v=gut1','./app.js?v=gut1','./icon.svg?v=gut1','./icon-180.png?v=gut1','./icon-192.png?v=gut1','./icon-512.png?v=gut1','./manifest.json'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL))));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('chokatsu-note-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==self.location.origin)return;e.respondWith(fetch(e.request).then(res=>{if(res.ok){const copy=res.clone();e.waitUntil(caches.open(CACHE).then(c=>c.put(e.request,copy)));}return res;}).catch(async()=>{const found=await caches.match(e.request);if(found)return found;if(e.request.mode==='navigate'){const page=await caches.match('./index.html');if(page)return page;}return Response.error();}));});
