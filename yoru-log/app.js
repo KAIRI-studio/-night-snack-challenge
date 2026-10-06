@@ -39,3 +39,8 @@ function validatePhoto(file){return new Promise((resolve,reject)=>{const url=URL
 $('background-file').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const input=e.target;input.disabled=true;$('background-remove').disabled=true;$('background-status').textContent='写真を保存しています…';try{if(!file.type.startsWith('image/'))throw Error('Unsupported image');await validatePhoto(file);await photoStore('put',file);showWallpaper(file);$('background-status').textContent='✓ 背景写真を保存しました。次に開いたときも表示されます。';}catch{$('background-status').textContent='写真を保存できませんでした。JPEG・PNGの写真や、小さめの画像でもう一度お試しください。';}finally{input.disabled=false;input.value='';$('background-remove').disabled=!wallpaperURL;}};
 $('background-remove').onclick=async()=>{$('background-remove').disabled=true;try{await photoStore('delete');showWallpaper(null);$('background-status').textContent='背景写真を外しました。';}catch{$('background-status').textContent='写真を外せませんでした。もう一度お試しください。';$('background-remove').disabled=!wallpaperURL;}};
 void loadWallpaper();
+
+const cardOpacityKey='chokatsu-note-card-opacity-v1';
+function applyCardOpacity(value){const n=Math.max(0,Math.min(100,Number(value)));document.documentElement.style.setProperty('--card-opacity',String(n/100));$('card-opacity').value=String(n);$('card-opacity-value').textContent=n+'%';return n;}
+try{const saved=localStorage.getItem(cardOpacityKey);applyCardOpacity(saved!==null&&Number.isFinite(Number(saved))?Number(saved):60);}catch{applyCardOpacity(60);}
+$('card-opacity').oninput=e=>{const n=applyCardOpacity(e.target.value);try{localStorage.setItem(cardOpacityKey,String(n));}catch{$('background-status').textContent='カードの濃さを変更しましたが、設定を保存できませんでした。';}};
