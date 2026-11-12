@@ -4,7 +4,7 @@ const options={bowel:['未記録','出なかった','出た'],shape:['未記録'
 const today=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo'}).format(new Date());
 const blank=date=>({date,yogurt:false,banana:false,drink:false,natto:false,water:0,bowel:'未記録',shape:'未記録',feeling:'未記録',blood:false,note:''});
 const validDate=s=>typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&!isNaN(Date.parse(s))&&new Date(s).toISOString().slice(0,10)===s;
-const valid=x=>x&&validDate(x.date)&&['yogurt','banana','natto','blood'].every(k=>typeof x[k]==='boolean')&&(x.natto===undefined||typeof x.natto==='boolean')&&Number.isInteger(x.water)&&x.water>=0&&x.water<=30&&Object.keys(options).every(k=>options[k].includes(x[k]))&&typeof x.note==='string'&&x.note.length<=500;
+const valid=x=>x&&validDate(x.date)&&['yogurt','banana','drink','blood'].every(k=>typeof x[k]==='boolean')&&(x.natto===undefined||typeof x.natto==='boolean')&&Number.isInteger(x.water)&&x.water>=0&&x.water<=30&&Object.keys(options).every(k=>options[k].includes(x[k]))&&typeof x.note==='string'&&x.note.length<=500;
 let records=[],day=blank(today()),dirty=false,storageReady=false;
 function message(text,error=false){$('message').textContent=text;$('message').className=error?'error':'success';}
 try{const data=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(data)||!data.every(valid))throw Error('Invalid stored records');records=data;storageReady=true;}catch(e){message('保存済みの記録を読み込めませんでした。データは変更していません。',true);$('save').disabled=true;document.querySelectorAll('#record input,#record textarea,#record button').forEach(x=>x.disabled=true);}
